@@ -2,6 +2,12 @@ from PIL import Image
 import numpy as np
 
 def imagen()->Image:
+    """""
+    la funcion nosdevuelve la imagen sobre la que queremos interactuar
+    
+    Returns:
+        Image: la imagen sobre la que queremos interactuar
+    """""
     while True:
         ruta_img = input("Ingrese la ruta de la imagen: ")     #Pedimos la ruta de la imagen sobre la que uqiere interactuar
         try:
@@ -11,6 +17,11 @@ def imagen()->Image:
 
 
 def metodo_usar()->str:
+    """""
+    la funcion nos dice que metodo queremos usar
+    Returns:
+        str: el metodo que queremos usar
+    """""
     metodo = input("Ingrese el metodo a usar(Pixel/Ascii): ")
     while metodo.lower() != "pixel" and metodo.lower() != "ascii":  # nos fijamos si el usaurio escribio pixel o ascii sin importar si con mayusculas o minusculas por que los convertimos a minusculas
         print("Metodo no valido")
@@ -19,6 +30,14 @@ def metodo_usar()->str:
     return metodo
 
 def tamaño(metodo:str)-> tuple[int,int] | int:
+    """""
+    la funcion recibe el metodo que se va a usar y devuelve el tamaño del bloque o el ancho de la imagen
+
+    Args:
+        metodo(str): el metodo que se va a usar
+    Returns:
+        tuple[int,int] | int: el tamaño del bloque y niveles de color como tupla para metodo pixel o el ancho de la imagen para metodo ascii
+    """""
     if metodo.lower() == "pixel":
         tam_bloque = input("Ingrese el tamaño del bloque: ")
         niveles_color = input("Ingrese el número de niveles de color: ")
@@ -35,6 +54,16 @@ def tamaño(metodo:str)-> tuple[int,int] | int:
         return int(ancho_imagen)
     
 def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
+    """""
+    la funcion recibe una imagen , el tamaño de los bloques y la cantidad de niveles de color y devuelve una imagen
+
+    Args:
+        img(Image): la imagen que queremos usar
+        tam_bloque(int): el tamaño de los bloques en pixeles (tamaño del bloque * tamaño del bloque)
+        niveles_color(int): la cantidad de niveles de color que queremos usar
+    Returns:
+        Image: la imagen con los pixeles cambiados segun tamaño de bloques y niveles de color
+    """""
     array_pixeles = np.array(img) # creamos el array de pixeles en base a la imagen que va a tener 3 valores [r,g,b]
     alto, ancho = array_pixeles.shape[0],array_pixeles.shape[1] # sacamos la altura y anchura de la imgan
     colores_posibles = np.linspace(0,255,niveles_color).astype(int) # sacamos los valores posibles (entre 0 y 255 , niveles de color = canitdad de nveles que hay entre el 0 y el 256)
@@ -76,6 +105,13 @@ def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
             
 
 def imagen_final_output(imagen_final:Image) -> str:
+    """""
+    funcion que nos devuelve la ruta de salida de la imagen
+    Args:
+        imagen_final(Image): la imagen que queremos guardar
+    Returns:
+        str: la ruta de salida de la imagen
+    """""
     while True:
         ruta_salida = input("Ingrese la ruta de salida de la imagen: ")   #Pedimos la ruta en la que se quiere guardar la imagen
         try:
