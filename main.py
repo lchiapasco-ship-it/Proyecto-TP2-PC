@@ -85,9 +85,18 @@ def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
                     columna1_r.append(pixel_bloque[0]) #Guardamos su valor r , g y b en las listas
                     columna2_g.append(pixel_bloque[1])
                     columna3_b.append(pixel_bloque[2])
-            media_columna_1_r = sum(columna1_r)/len(columna1_r)   #Hacemos la media de cada columna de cada bloque para sacar los valores rgb de cada bloque en total lo hacemos sumando cada columna y dividiendo por cadntidad de filas
-            media_columna_2_g = sum(columna2_g)/len(columna2_g)
-            media_columna_3_b = sum(columna3_b)/len(columna3_b)
+            suma_r = 0
+            for i in columna1_r:
+                suma_r += int(i)
+            media_columna_1_r = suma_r/len(columna1_r)   #Hacemos la media de cada columna de cada bloque para sacar los valores rgb de cada bloque en total lo hacemos sumando cada columna y dividiendo por cadntidad de filas
+            suma_g = 0
+            for i in columna2_g:
+                suma_g += int(i)
+            media_columna_2_g = suma_g/len(columna2_g)
+            suma_b = 0
+            for i in columna3_b:
+                suma_b += int(i)
+            media_columna_3_b = suma_b/len(columna3_b)
             media_rgb = [media_columna_1_r,media_columna_2_g,media_columna_3_b] # Creamos una lista con los valores medios rgb de cada bloque
             color_r_final = {}
             color_g_final = {}      #Creamos diccionarios para guardar con key y value los valores y la resta entre el valor medio y el color posible
