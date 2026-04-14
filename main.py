@@ -68,7 +68,12 @@ def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
     """""
     array_pixeles = np.array(img) # creamos el array de pixeles en base a la imagen que va a tener 3 valores [r,g,b]
     alto, ancho = array_pixeles.shape[0],array_pixeles.shape[1] # sacamos la altura y anchura de la imgan
-    colores_posibles = np.linspace(0,255,niveles_color).astype(int) # sacamos los valores posibles (entre 0 y 255 , niveles de color = canitdad de nveles que hay entre el 0 y el 256)
+    colores_posibles = []
+    rango = 255 / niveles_color-1 # tenemos rango entre 0 y 255 y necesitamos dividir por la cantidad de niveles de color - 1 para que quede el 255 y el 0 por que si usamos solo niveles_color el 255 quedaria afuera
+    for num in range(niveles_color):
+        color = num * rango  # multiplicamos los num por el rango para obtener los  rgb de los colores posibles
+        colores_posibles.append(color) # guardamos los colores posibles
+     
     for fila in range(0,alto,tam_bloque): #Indicamos el tamaño del bloque 0(inicio), alto en filas(altura de imagen/fin) , tamaño de bloque como intervalo para separar en bloques en esos intervalos
         for columna in range(0,ancho,tam_bloque): #Indicamos el tamaño del bloque 0(inicio), ancho en columnas(altura de imagen/fin) , tamaño de bloque como intervalo para separar en bloques en esos intervalos
             pixel = array_pixeles[fila:tam_bloque+fila,columna:tam_bloque+columna] #Creamos los pixeles con los tamaños de fila y columnas de los bloques sacandolos del array ancho = fila:tam_bloque+fila y ancho = columna:tam_bloque+columna
