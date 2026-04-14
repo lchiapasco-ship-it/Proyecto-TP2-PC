@@ -12,6 +12,8 @@ def imagen()->Image:
         ruta_img = input("Ingrese la ruta de la imagen: ")     #Pedimos la ruta de la imagen sobre la que uqiere interactuar
         try:
             return Image.open(ruta_img)  # probamos abrir la imagen
+        except FileNotFoundError: # si no se encuentra la imagen
+            print("No se encontró la imagen. Por favor, verifique la ruta e intente nuevamente.") 
         except Exception as e: # si hay algun error
             print(f"El error es {e}") # lo mostramos al usuario
 
@@ -29,7 +31,7 @@ def metodo_usar()->str:
         
     return metodo
 
-def tamaño(metodo:str)-> tuple[int,int] | int:
+def tamaños_metodo(metodo:str)-> tuple[int,int] | int:
     """""
     la funcion recibe el metodo que se va a usar y devuelve el tamaño del bloque o el ancho de la imagen
 
@@ -92,11 +94,11 @@ def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
             r_final = min(color_r_final , key=color_r_final.get)
             g_final = min(color_g_final , key=color_g_final.get)   # en base a los dicts usamos min para sacar el numero mas chico para cada key y el min hacemos .get para sacar ese valor y guardarlo como el promedio para valor de r
             b_final = min(color_b_final , key=color_b_final.get)
-            for fila_pixel in range(fila, tam_bloque+fila):  # entramos en cada fila de nuestro bloque
-                for columna_pixel in range(columna, tam_bloque+columna): # entramos en cada columna de nuestro bloque
-                    array_pixeles[fila_pixel,columna_pixel, 0] = r_final  # le damos valor de color a cada pixel de nuestro bloque teniendo en cuenta que r = 0 , g = 1 y b = 2 en cada pixel
-                    array_pixeles[fila_pixel,columna_pixel, 1] = g_final
-                    array_pixeles[fila_pixel,columna_pixel, 2] = b_final                   
+            for fila_pixel in range(fila, min(fila+tam_bloque,alto)):  # entramos en cada fila de nuestro bloque y elegimos el minimo entre el tamaño del bloque y el alto por que si el tamaño del bloque es mas grande que  el alto nos va a dar error pero si solo ponemos el alto vamos a pintar por fuera del bloque que estamos pintando
+                for columna_pixel in range(columna, min(columna+tam_bloque,ancho)): # entramos en cada columna de nuestro bloque y elegimos el minimo entre el tamaño del bloque y el alto por que si el tamaño del bloque es mas grande que  el ancho nos va a dar error pero si solo ponemos el ancho vamos a pintar por fuera del bloque que estamos pintando
+                    array_pixeles[fila_pixel][columna_pixel][0] = r_final  # le damos valor de color a cada pixel de nuestro bloque teniendo en cuenta que r = 0 , g = 1 y b = 2 en cada pixel
+                    array_pixeles[fila_pixel][columna_pixel][1] = g_final
+                    array_pixeles[fila_pixel][columna_pixel][2] = b_final                   
     formato_img = array_pixeles.astype(np.uint8) # convertimos el array en formato de imagen
     imagen_final = Image.fromarray(formato_img) #convertimos nuestro array en formato imagen en una imagen 
     return imagen_final # devolvemos imagen
@@ -127,7 +129,7 @@ def main():
     img = imagen()
     metodo = metodo_usar()
     if metodo.lower() == "pixel":
-        tam_bloque,niveles_color = tamaño(metodo)
+        tam_bloque,niveles_color = tamaños_metodo(metodo)
         imagen_final = pixel(img,tam_bloque,niveles_color)
         ruta_salida = imagen_final_output(imagen_final)
         print(ruta_salida)
