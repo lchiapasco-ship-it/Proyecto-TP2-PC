@@ -117,8 +117,41 @@ def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
     imagen_final = Image.fromarray(formato_img) #convertimos nuestro array en formato imagen en una imagen 
     return imagen_final # devolvemos imagen
             
- 
-            
+def ascii(imagen:Image,ancho:int) -> str:
+    """""
+    la funcion recibe una imagen y el ancho de la imagen y devuelve una imagen ascii
+    Args:
+        imagen(Image): la imagen que queremos usar
+        ancho(int): el ancho de la imagen
+    Output:
+        str: la imagen ascii
+    """""
+    paleta = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+    imagen_gris = imagen.convert('L')
+    array_pixeles = np.array(imagen_gris) # convertimos la imagen en un array
+    minimo = int(array_pixeles.min())
+    maximo = int(array_pixeles.max())
+
+    alto, ancho = array_pixeles.shape[0],array_pixeles.shape[1]
+    for fila in range(alto):
+        for columna in range(ancho):
+            array_pixeles[fila][columna] = (int(array_pixeles[fila][columna]) - minimo) /( maximo - minimo)* 255 
+    print(array_pixeles)
+    relacion_aspecto_img = ancho/alto
+    nuevo_alto = int(relacion_aspecto_img*ancho*0.45)  
+    imagen_redimensionada = imagen.resize((ancho,nuevo_alto)) # redimensionamos la imagen
+    array_redimensionado_final = np.array(imagen_redimensionada)
+    imagen_final = ""
+    resultado = ""
+    for fila in range(nuevo_alto):
+        fila_ascii = ""
+        for columna in range(ancho):
+            valor_intensidad = round(((1-int(array_redimensionado_final[fila][columna]))/255) *(70-1))
+            fila_ascii += paleta[valor_intensidad]
+        imagen_final += fila_ascii + "\n"
+    return resultado
+
+
 
 def imagen_final_output(imagen_final:Image) -> str:
     """""
@@ -138,8 +171,8 @@ def imagen_final_output(imagen_final:Image) -> str:
         
 
 
-    
-def main():
+
+def main(): 
     img = imagen()
     metodo = metodo_usar()
     if metodo.lower() == "pixel":
@@ -147,7 +180,10 @@ def main():
         imagen_final = pixel(img,tam_bloque,niveles_color)
         ruta_salida = imagen_final_output(imagen_final)
         print(ruta_salida)
-        
+    elif metodo.lower() == "ascii":
+        ancho = tamaños_metodo(metodo)
+        imagen_final = ascii(img,ancho)
+        print(imagen_final)
     
               
 
