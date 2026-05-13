@@ -127,29 +127,54 @@ def ascii(imagen:Image,ancho:int) -> str:
         str: la imagen ascii
     """""
     paleta = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+    N = len(paleta)
     imagen_gris = imagen.convert('L')
-    array_pixeles = np.array(imagen_gris) # convertimos la imagen en un array
-    minimo = int(array_pixeles.min())
-    maximo = int(array_pixeles.max())
+    ancho_original, alto_original = imagen_gris.size
+    nuevo_ancho = ancho
+    nuevo_alto = int((alto_original / ancho_original) * nuevo_ancho * 0.45)
+    imagen_redimensionada = imagen_gris.resize((nuevo_ancho, nuevo_alto))
+    array_pixeles = np.array(imagen_redimensionada).astype(float)
+    minimo = array_pixeles.min()
+    maximo = array_pixeles.max()
+    if maximo == minimo:
+        array_normalizado = array_pixeles
+    else:
+        array_normalizado = np.zeros((nuevo_alto, nuevo_ancho))
+        for fila in range(nuevo_alto):
+            for columna in range (nuevo_ancho):
+                p = array_pixeles[fila][columna]
+                array_normalizado[fila][columna] = (p - minimo) / (maximo - minimo) * 255
 
-    alto, ancho = array_pixeles.shape[0],array_pixeles.shape[1]
-    for fila in range(alto):
-        for columna in range(ancho):
-            array_pixeles[fila][columna] = (int(array_pixeles[fila][columna]) - minimo) /( maximo - minimo)* 255 
-    print(array_pixeles)
-    relacion_aspecto_img = ancho/alto
-    nuevo_alto = int(relacion_aspecto_img*ancho*0.45)  
-    imagen_redimensionada = imagen.resize((ancho,nuevo_alto)) # redimensionamos la imagen
-    array_redimensionado_final = np.array(imagen_redimensionada)
-    imagen_final = ""
     resultado = ""
     for fila in range(nuevo_alto):
         fila_ascii = ""
-        for columna in range(ancho):
-            valor_intensidad = round(((1-int(array_redimensionado_final[fila][columna]))/255) *(70-1))
-            fila_ascii += paleta[valor_intensidad]
-        imagen_final += fila_ascii + "\n"
+        for columna in range(nuevo_ancho):
+            p = array_normalizado[fila][columna]
+            # Formula del PDF: indice 0 = mas denso (pixel oscuro), indice N-1 = mas liviano
+            i = round((1 - p / 255) * (N - 1))
+            fila_ascii += paleta[i]
+        resultado += fila_ascii + "\n"
+
     return resultado
+
+    # alto, ancho = array_pixeles.shape[0],array_pixeles.shape[1]
+    # for fila in range(alto):
+    #     for columna in range(ancho):
+    #         array_pixeles[fila][columna] = (int(array_pixeles[fila][columna]) - minimo) /( maximo - minimo)* 255
+    # print(array_pixeles)
+    # relacion_aspecto_img = ancho/alto
+    # nuevo_alto = int(relacion_aspecto_img*ancho*0.45)
+    # imagen_redimensionada = imagen.resize((ancho,nuevo_alto)) # redimensionamos la imagen
+    # array_redimensionado_final = np.array(imagen_redimensionada)
+    # imagen_final = ""
+    # resultado = ""
+    # for fila in range(nuevo_alto):
+    #     fila_ascii = ""
+    #     for columna in range(ancho):
+    #         valor_intensidad = round(((1-int(array_redimensionado_final[fila][columna]))/255) *(70-1))
+    #         fila_ascii += paleta[valor_intensidad]
+    #     imagen_final += fila_ascii + "\n"
+    # return resultado
 
 
 
