@@ -116,26 +116,34 @@ def pixel(img:Image, tam_bloque:int, niveles_color:int)->Image:
     formato_img = array_pixeles.astype(np.uint8) # convertimos el array en formato de imagen
     imagen_final = Image.fromarray(formato_img) #convertimos nuestro array en formato imagen en una imagen 
     return imagen_final # devolvemos imagen
-            
+
+
+def guardar_ascii_art(ascii_art: str, ruta_salida: str):
+    with open(ruta_salida, 'w') as f:
+        f.write(ascii_art)
 def ascii(imagen:Image,ancho:int) -> str:
     """""
-    la funcion recibe una imagen y el ancho de la imagen y devuelve una imagen ascii
+    la funcion recibe una imagen, el ancho de la imagen y la ruta de salida y devuelve una imagen ascii
     Args:
         imagen(Image): la imagen que queremos usar
         ancho(int): el ancho de la imagen
     Output:
         str: la imagen ascii
+        archivo .txt
     """""
+    archivo = input("ingrese la ruta del archivo .txt de salida: ")
     paleta = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
     N = len(paleta)
-    imagen_gris = imagen.convert('L')
+    imagen_gris = imagen.convert('L') #convertimos la imagen en blanco y negro para transformarla en un canal de color y poderle asociar un caracter
     ancho_original, alto_original = imagen_gris.size
     nuevo_ancho = ancho
-    nuevo_alto = int((alto_original / ancho_original) * nuevo_ancho * 0.45)
+    nuevo_alto = int((alto_original / ancho_original) * nuevo_ancho * 0.45) #cambiamos el alto porque los caracteres no son perfectamente cuadrados, sin este paso se deformaria la imagen
     imagen_redimensionada = imagen_gris.resize((nuevo_ancho, nuevo_alto))
-    array_pixeles = np.array(imagen_redimensionada).astype(float)
+    array_pixeles = np.array(imagen_redimensionada).astype(float) #convertimos la imagen a un array
     minimo = array_pixeles.min()
     maximo = array_pixeles.max()
+
+    #aca vamos a mapear cada pixel a un caracter, si el rango en vez de ser de 0 a 255 es de 100 a 200, lo estiramos para que la imagen en ascii se vea bien
     if maximo == minimo:
         array_normalizado = array_pixeles
     else:
@@ -150,11 +158,14 @@ def ascii(imagen:Image,ancho:int) -> str:
         fila_ascii = ""
         for columna in range(nuevo_ancho):
             p = array_normalizado[fila][columna]
-            # Formula del PDF: indice 0 = mas denso (pixel oscuro), indice N-1 = mas liviano
+            # Formula que dan en el TP: indice 0 = mas denso (pixel oscuro), indice N-1 = mas liviano
             i = round((1 - p / 255) * (N - 1))
             fila_ascii += paleta[i]
         resultado += fila_ascii + "\n"
-
+    #guardamos el texto en un .txt
+    if not archivo.endswith(".txt"):
+        archivo = archivo + '.txt'
+    guardar_ascii_art(resultado, "out/"+archivo)
     return resultado
 
     # alto, ancho = array_pixeles.shape[0],array_pixeles.shape[1]
